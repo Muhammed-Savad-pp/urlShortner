@@ -1,0 +1,10 @@
+{
+  "tailwindCSS.tailwindConfig": "client/tailwind.config.js",
+  "tailwindCSS.includeLanguages": {
+    "typescriptreact": "html"
+  },
+  "editor.quickSuggestions": {
+    "strings": true
+  },
+  "css.validate": false
+}
