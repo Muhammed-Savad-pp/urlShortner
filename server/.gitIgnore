@@ -14,7 +14,7 @@ pids/
 *.pid.lock
 
 # Build output
-dist/
+# dist/
 build/
 
 # Environment variables
