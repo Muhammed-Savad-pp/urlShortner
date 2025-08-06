@@ -14,17 +14,16 @@
 
 {
   "compilerOptions": {
-    "target": "ES2020",                        // Modern JS
-    "module": "CommonJS",                      // Needed for Node.js
-    "rootDir": "./src",                        // Your TS source files
-    "outDir": "./dist",                        // Output directory after build
-    "esModuleInterop": true,                   // Allow default import compatibility
-    "forceConsistentCasingInFileNames": true,  // Catch casing issues on import
-    "strict": true,                            // Enable all strict type checks
-    "skipLibCheck": true,                      // Speed up build by skipping type checks in node_modules
-    "moduleResolution": "Node",                // Resolve Node-style modules
-    "resolveJsonModule": true,                 // Allow importing `.json` files
-    "types": ["node", "express"]               // Ensure Node + Express types are included
+    "target": "ES2020",                        
+    "module": "CommonJS",                      
+    "rootDir": "./src",                        
+    "outDir": "./dist",                        
+    "esModuleInterop": true,                   
+    "forceConsistentCasingInFileNames": true,  
+    "strict": true,                           
+    "skipLibCheck": true,
+    "moduleResolution": "Node",               
+    "resolveJsonModule": true,   
   },
   "include": ["src/**/*"]
 }
