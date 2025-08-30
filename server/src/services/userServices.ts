@@ -3,6 +3,7 @@ import { IUser } from "../models/UserModel";
 import { IUserRepository } from "../repository/interface/IUserRepository";
 import bcrypt from 'bcrypt'
 import { generateAccessToken, generateRefreshToken, verifyToken } from "../utils/token.utils";
+import { MESSAGE } from "../constants/message";
 
 async function hashPassword(password:string): Promise<string> {
     return await bcrypt.hash(password, 10)
@@ -20,20 +21,20 @@ export class UserService implements IUserService {
             const { name, email, password, confirmPassword } = userData;
 
             if(!name || !email || !password || !confirmPassword) {
-                return {success: false, message: 'complete the fields'}
+                return {success: false, message: MESSAGE.FIELDS_ERROR}
             }
 
             if(password !== confirmPassword) {
-                return { success: false, message: 'Password and confirm Password not match'}
+                return { success: false, message: MESSAGE.PASSWORD_ERROR}
             }
 
             const existingUser = await this._userRepository.findOne({email: email});
 
             if(existingUser) {
-                return {success: false, message: "This email already registered"}
+                return {success: false, message: MESSAGE.EXISCTING_EMAIL}
             }
 
-            const hashedPassword = await hashPassword(password);
+            const hashedPassword = await hashPassword(password); 
 
             const response = await this._userRepository.createUser(
                 {
@@ -43,8 +44,7 @@ export class UserService implements IUserService {
                 }
             )
 
-            return {success: true, message: 'SignUp SuccessFully'}
-
+            return {success: true, message: MESSAGE.COMPLETE_SIGNUP}
 
         } catch (error) {
             console.error(error);
@@ -58,20 +58,17 @@ export class UserService implements IUserService {
             const existingUser = await this._userRepository.findOne({email: email});
             
             if(!existingUser) {
-                return { success: false, message: 'User not found'}
+                return { success: false, message: MESSAGE.NO_USER}
             }
 
             const validPassowrd = await bcrypt.compare(password, existingUser.password);
 
-            if(!validPassowrd) return {success: false, message: "Invalid Password"};
+            if(!validPassowrd) return {success: false, message: MESSAGE.INVALID_PASSWORD};
 
             const accessToken = await generateAccessToken(existingUser.id as string);
-            const refreshToken = await generateRefreshToken(existingUser._id as string);
-            console.log(accessToken, 'accessToken');
-            console.log(refreshToken, 'refreshToken');
-            
+            const refreshToken = await generateRefreshToken(existingUser._id as string);            
 
-            return { success: true, message: "Logged SuccessFully",accessToken: accessToken, refreshToken}
+            return { success: true, message: MESSAGE.SUCESSFULL_LOGIN,accessToken: accessToken, refreshToken}
 
 
         } catch (error) {
@@ -82,18 +79,13 @@ export class UserService implements IUserService {
 
     async validateRefreshToken(token: string): Promise<{ accessToken?: string; refreshToken?: string; }> {
         try {
-            
-            console.log('refresh token');
-            
+                        
             const decoded = verifyToken(token);
-            console.log(decoded);
-            
-            const user = await this._userRepository.findById(decoded.id);
-            console.log(user);
-            
+
+            const user = await this._userRepository.findById(decoded.id);            
 
             if(!user) {
-                const error: any = new Error('User not found');
+                const error: any = new Error(MESSAGE.NO_USER);
                 error.status = 404;
                 throw error;
             }
@@ -102,7 +94,6 @@ export class UserService implements IUserService {
             const refreshToken = await generateRefreshToken(user._id as string);
 
             return {accessToken, refreshToken};
-            
 
         } catch (error) {
             console.log(error);

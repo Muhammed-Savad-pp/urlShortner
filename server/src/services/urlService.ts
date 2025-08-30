@@ -1,3 +1,4 @@
+import { MESSAGE } from "../constants/message";
 import { IUrlService } from "../interface/IUrlService";
 import { IUrl } from "../models/UrlModel";
 import { IUrlRepository } from "../repository/interface/IUrlRepository";
@@ -16,7 +17,7 @@ export class UrlService implements IUrlService {
             const urlData = await this._urlRepository.findOne({userId: userId, originalUrl: originalUrl});
 
             if(urlData) {
-                return { success: false, message: 'Url already convert'}
+                return { success: false, message: MESSAGE.EXISTING_URL}
             }
 
             const shortUrl = `${process.env.BACKEND_URL}/url/short-url/${uuidv4().slice(0, 8)}`;
@@ -26,7 +27,7 @@ export class UrlService implements IUrlService {
                 shortUrl,
             });            
 
-            return { success: true, message: "URL converted", newUrl: createdUrlShortner}
+            return { success: true, message: MESSAGE.CONVERT_URL, newUrl: createdUrlShortner}
 
         } catch (error) {
             console.error(error);

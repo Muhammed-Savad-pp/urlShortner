@@ -16,6 +16,7 @@ function Login() {
 
     const [showPassword, setShowPassword] = useState(false);
     const [errors, setErrors] = useState<IFormErrors>({});
+    const [isLoading, setIsLoading] = useState<boolean>(false)
     const [formData, setFormData] = useState<IUserLogin>({
         email: '',
         password: '',
@@ -34,8 +35,6 @@ function Login() {
         }));
 
     }
-
-
 
     const validateForm = (): boolean => {
         const newErrors: IFormErrors = {};
@@ -64,12 +63,11 @@ function Login() {
             toast.error('Fix erros')
             return
         }
+        setIsLoading(true)
 
         try {
 
             const response = await LoginUser(formData.email, formData.password);
-            console.log("response:", response.data);
-
             if (response.success) {
                 toast.success(response.message);
                 dispatch(loginSuccess({ token: response.accessToken }));
@@ -78,12 +76,15 @@ function Login() {
 
 
         } catch (error: any) {
+            setIsLoading(false)
             console.error(error);
             toast.error(error.response.data.message)
+        } finally {
+            setIsLoading(false)
         }
+        setIsLoading(false)
 
     }
-
 
     return (
         <>
@@ -180,7 +181,7 @@ function Login() {
                                     hover:shadow-2xl hover:shadow-green-500/30 focus:outline-none focus:ring-4 focus:ring-green-500/40
                                     active:scale-[0.98] text-lg"
                             >
-                                Login
+                                { isLoading ? 'Please Wait' : 'Login'}
                             </button>
                         </div>
 

@@ -2,6 +2,7 @@ import { Response } from "express";
 import { IUrlController } from "../interface/IUrlController";
 import { IUrlService } from "../interface/IUrlService";
 import { CustomeRequest } from "../middleware/userAuth";
+import { HTTP_STATUS } from "../constants/httpStatus";
 
 
 class UrlController implements IUrlController {
@@ -18,11 +19,11 @@ class UrlController implements IUrlController {
             
             const response = await this._urlService.urlShortner(userId as string, url);
 
-            res.status(200).json(response);
+            res.status(HTTP_STATUS.OK).json(response);
 
         } catch (error) {
             console.log(error);
-            res.status(500).json(error)
+            res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json(error)
         }
     }
 
@@ -36,11 +37,11 @@ class UrlController implements IUrlController {
 
             const response = await this._urlService.urls(userId as string, page, limit, search);
 
-            res.status(200).json(response)
+            res.status(HTTP_STATUS.OK).json(response)
             
         } catch (error) {
             console.error(error);
-            res.status(500).json(error)
+            res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json(error)
         }
     }
 
@@ -59,7 +60,7 @@ class UrlController implements IUrlController {
 
         } catch (error) {
             console.error(error);
-            res.status(500).json(error)
+            res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json(error)
         }
     }
 

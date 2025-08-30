@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { IUserController } from "../interface/IuserController";
 import { IUserService } from "../interface/IUserServices";
+import { HTTP_STATUS } from "../constants/httpStatus";
 
 class UserController implements IUserController {
 
@@ -15,10 +16,11 @@ class UserController implements IUserController {
 
             const response = await this._userService.registerUser(formData);
 
-            res.status(200).json(response)
+            res.status(HTTP_STATUS.OK).json(response)
 
         } catch (error) {
-            console.error(error)
+            console.error(error);
+            res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json(error)
         }
     }
 
@@ -26,12 +28,11 @@ class UserController implements IUserController {
         try {
 
             const { email, password } = req.body;
-            console.log(email, password, 'sdadf');
 
             const response = await this._userService.loginUser(email, password);
 
             if (response.success) {
-                res.status(201)
+                res.status(HTTP_STATUS.CREATED)
                     .cookie('refreshToken', response.refreshToken, {
                         httpOnly: true,
                         secure: true,
@@ -40,14 +41,12 @@ class UserController implements IUserController {
                     })
                     .json({ success: true, message: 'Logged  in successfully', accessToken: response.accessToken })
             } else {
-                console.log('here');
-
-                res.status(401).json({ success: false, message: response.message })
+                res.status(HTTP_STATUS.UNAUTHORIZED).json({ success: false, message: response.message })
             }
 
         } catch (error) {
             console.error(error);
-            res.status(500).json(error)
+            res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json(error)
         }
     }
 
@@ -60,7 +59,7 @@ class UserController implements IUserController {
 
         } catch (error) {
             console.error(error);
-            res.status(500).json(error)
+            res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json(error)
         }
     }
 
@@ -70,7 +69,7 @@ class UserController implements IUserController {
             console.log('req.cookies', req.cookies.refreshToken);
 
             if (!req.cookies.refreshToken) {
-                res.status(400).json({
+                res.status(HTTP_STATUS.BAD_REQUEST).json({
                     success: false,
                     message: 'Refresh token not found'
                 });
@@ -87,7 +86,7 @@ class UserController implements IUserController {
                 sameSite: 'none',
             });
 
-            res.status(200).json({
+            res.status(HTTP_STATUS.OK).json({
                 success: true,
                 message: 'Token created',
                 token: accessToken,
@@ -96,15 +95,15 @@ class UserController implements IUserController {
         } catch (error: any) {
             console.error(error);
 
-            if (error.status === 401) {
-                res.status(401).json({
+            if (error.status === HTTP_STATUS.UNAUTHORIZED) {
+                res.status(HTTP_STATUS.UNAUTHORIZED).json({
                     success: false,
                     message: error.message
                 });
                 return;
             }
 
-            res.status(500).json({
+            res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
                 success: false,
                 message: error.message || 'An internal server error occured',
             })

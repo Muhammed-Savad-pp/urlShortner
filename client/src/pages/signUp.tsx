@@ -18,7 +18,7 @@ const SignUpPage: React.FC = () => {
     password: '',
     confirmPassword: ''
   });
-  
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
   const [errors, setErrors] = useState<FormErrors>({});
@@ -78,7 +78,7 @@ const SignUpPage: React.FC = () => {
     if (!validateForm()) {  
       return
     }
-
+    setIsLoading(true)
     try {
 
         const response: any = await registerUser(formData);
@@ -92,7 +92,10 @@ const SignUpPage: React.FC = () => {
         }
 
     } catch (error) {
+        setIsLoading(false)
         console.error(error)
+    } finally  {
+      setIsLoading(false)
     }
 
   };
@@ -261,7 +264,7 @@ const SignUpPage: React.FC = () => {
                 hover:shadow-2xl hover:shadow-green-500/30 focus:outline-none focus:ring-4 focus:ring-green-500/40
                 active:scale-[0.98] text-lg"
             >
-              Create Account
+             { isLoading ? 'Wait' : 'Create Account'} 
             </button>
           </div>
 
